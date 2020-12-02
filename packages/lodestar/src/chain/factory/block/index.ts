@@ -3,10 +3,12 @@
  */
 
 import {fastStateTransition, IStateContext} from "@chainsafe/lodestar-beacon-state-transition";
+import {createCachedValidatorsBeaconState} from "@chainsafe/lodestar-beacon-state-transition/lib/fast/util";
 import {IBeaconConfig} from "@chainsafe/lodestar-config";
 import {BeaconBlock, Bytes96, Root, Slot} from "@chainsafe/lodestar-types";
 import {EMPTY_SIGNATURE, ZERO_HASH} from "../../../constants";
 import {IBeaconDb} from "../../../db/api";
+import {ITreeStateContext} from "../../../db/api/beacon/stateContextCache";
 import {IEth1ForBlockProduction} from "../../../eth1";
 import {IBeaconChain} from "../../interface";
 import {assembleBody} from "./body";
@@ -36,13 +38,17 @@ export async function assembleBlock(
   return block;
 }
 
-function computeNewStateRoot(config: IBeaconConfig, stateContext: IStateContext, block: BeaconBlock): Root {
+function computeNewStateRoot(config: IBeaconConfig, stateContext: ITreeStateContext, block: BeaconBlock): Root {
   // state is cloned from the cache already
   const signedBlock = {
     message: block,
     signature: EMPTY_SIGNATURE,
   };
-  const newState = fastStateTransition(stateContext, signedBlock, {
+  const stateTranstionStateContext: IStateContext = {
+    epochCtx: stateContext.epochCtx,
+    state: createCachedValidatorsBeaconState(stateContext.state),
+  };
+  const newState = fastStateTransition(stateTranstionStateContext, signedBlock, {
     verifyStateRoot: false,
     verifyProposer: false,
     verifySignatures: true,

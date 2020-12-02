@@ -1,14 +1,14 @@
 import bls from "@chainsafe/bls";
-import {BeaconState, SignedVoluntaryExit} from "@chainsafe/lodestar-types";
+import {SignedVoluntaryExit} from "@chainsafe/lodestar-types";
 
 import {DomainType, FAR_FUTURE_EPOCH} from "../../constants";
 import {computeSigningRoot, getDomain, isActiveValidator} from "../../util";
-import {EpochContext} from "../util";
+import {EpochContext, CachedValidatorsBeaconState} from "../util";
 import {initiateValidatorExit} from "./initiateValidatorExit";
 
 export function processVoluntaryExit(
   epochCtx: EpochContext,
-  state: BeaconState,
+  state: CachedValidatorsBeaconState,
   signedVoluntaryExit: SignedVoluntaryExit,
   verifySignature = true
 ): void {
