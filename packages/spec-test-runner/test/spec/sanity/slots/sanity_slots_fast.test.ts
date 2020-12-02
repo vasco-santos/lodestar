@@ -17,8 +17,6 @@ describeDirectorySpecTest<IProcessSlotsTestCase, BeaconState>(
     const epochCtx = new EpochContext(config);
     epochCtx.loadState(state);
     const wrappedState = createCachedValidatorsBeaconState(state);
-    // don't want to calculate the first hashTreeRoot
-    config.types.BeaconState.hashTreeRoot(wrappedState);
     processSlots(epochCtx, wrappedState, state.slot + Number(testcase.slots));
     return state;
   },
